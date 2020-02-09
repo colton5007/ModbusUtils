@@ -1,0 +1,49 @@
+<div class="row justify-content-center" style="padding-top: 2%">
+    <div class="col-xl-12">
+        <div class="card" style="background-color: #FFFFFF; color: #000000">
+            <header class="card-header font-small blue">
+                Data Egress >> Sparkplug
+            </header>
+            <article class="card-body">
+                <form action='/sparkplug-config' method="POST" id="config_form">
+                    <div class="form-group row">
+                        <label for="group_id" class="col-sm-2 col-form-label" data-toggle="tooltip"
+                               data-placement="bottom" title="The Group ID of the Sparkplug Endpoint."><b>Group
+                            ID</b></label>
+                        <div class="col-sm-2">
+                            <input id="group_id" name="group_id" type="text" class="form-control-sm"
+                                   value="{{ sparkplug.group_id }}">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="node_name" class="col-sm-2 col-form-label" data-toggle="tooltip"
+                               data-placement="bottom" title="The Node Name of the Sparkplug Endpoint."><b>Node Name</b></label>
+                        <div class="col-sm-2">
+                            <input id="node_name" name="node_name" type="text" class="form-control-sm"
+                                   value="{{ sparkplug.node_name }}">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="device_id" class="col-sm-2 col-form-label" data-toggle="tooltip"
+                               data-placement="bottom" title="The Device ID of the Sparkplug Endpoint."><b>Device ID</b></label>
+                        <div class="col-sm-2">
+                            <div class="input-group">
+                                <input id="device_id" name="device_id" type="text" class="form-control-sm"
+                                       value="{{ sparkplug.device_id }}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-8">
+                            <button name="submit" type="submit" class="btn btn-primary">Submit <i
+                                    class="fa fa-spinner fa-spin" id="loading-icon" style="display: none"></i></button>
+                        </div>
+                    </div>
+                    <span style="color: green" id="form-response"></span>
+                </form>
+            </article> <!-- card-body end .// -->
+
+        </div> <!-- card.// -->
+    </div> <!-- col.//-->
+</div> <!-- row.//-->
+</div>

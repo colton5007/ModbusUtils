@@ -1,0 +1,39 @@
+<div class="row justify-content-center"style="padding-top: 2%">
+	<div class="col-xl-12">
+		<div class="card" style="background-color: #FFFFFF; color: #000000">
+			<header class="card-header font-small blue">
+				Modbus Client >> TCP Config
+			</header>
+			<article class="card-body">
+				<form action='/client-tcp-config' method="POST" id="config_form">
+				  <div class="form-group row">
+				    <label for="ip" class="col-sm-2 col-form-label" data-toggle="tooltip" data-placement="bottom" title="The IP of the Modbus TCP Server."><b>IP</b></label>
+				    <div class="col-sm-2">
+				      <input id="ip" name="ip" type="text" class="form-control-sm" value={{ ip }}>
+				    </div>
+				  </div>
+				  <div class="form-group row">
+				    <label for="port" class="col-sm-2 col-form-label" data-toggle="tooltip" data-placement="bottom" title="The Port of the Modbus TCP Server."><b>Port</b></label>
+				    <div class="col-sm-2">
+				      <input id="port" name="port" type="number" class="form-control-sm" value={{ port }}>
+				    </div>
+				  </div>
+				  <div class="form-group row">
+				    <label for="timeout" class="col-sm-2 col-form-label" data-toggle="tooltip" data-placement="bottom" title="The TCP Timeout in Seconds of the Modbus TCP Server."><b>Timeout</b></label>
+				    <div class="col-sm-2">
+				      <input id="timeout" name="timeout" type="number" class="form-control-sm" value = {{ timeout }}>
+				    </div>
+				  </div> 
+				  <div class="form-group row">
+				    <div class="col-8">
+				      <button name="submit" type="submit" class="btn btn-primary">Submit <i class="fa fa-spinner fa-spin" id="loading-icon" style="display: none"></i></button>
+				    </div>
+				  </div>
+					<span style="color: green" id="form-response"></span>
+				</form>
+			</article> <!-- card-body end .// -->
+			
+			</div> <!-- card.// -->
+		</div> <!-- col.//-->
+	</div> <!-- row.//-->
+</div>

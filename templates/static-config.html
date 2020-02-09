@@ -1,0 +1,43 @@
+
+<div class="row justify-content-center"style="padding-top: 2%">
+	<div class="col-xl-12">
+		<div class="card" style="background-color: #FFFFFF; color: #000000">
+			<header class="card-header font-small blue">
+				Static Values
+			</header>
+			<article class="card-body">
+				<div class="row">
+                  <div class="col-sm-8">
+                      <table class="table table-striped table-bordered">
+                          <thead>
+                            <tr>
+                                <th scope="col">Variable Name</th>
+                                <th scope="col">Value</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {% for key in static_values %}
+                            <tr>
+                                <th scope="row">{{ key }}</th>
+                                <td>{{ static_values[key] }}</td>
+                            </tr>
+                            {% endfor %}
+                          </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="row">
+                    <div class="btn-group-lg" role="group">
+                        <button class="btn btn-primary" type="button" id="import_channels">Import</button>
+                        <button class="btn btn-primary" type="button" id="export_channels">Export</button>
+                        <button class="btn btn-primary" type="button" id="add_channels">Add</button>
+                        <button class="btn btn-primary" type="button" id="modify_channels">Modify</button>
+                        <button class="btn btn-primary" type="button" id="delete_channels">Delete</button>
+                    </div>
+                </div>
+			</article> <!-- card-body end .// -->
+
+			</div> <!-- card.// -->
+		</div> <!-- col.//-->
+	</div> <!-- row.//-->
+</div>

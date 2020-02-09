@@ -1,0 +1,279 @@
+<div class="row justify-content-center" style="padding-top: 2%" onkeydown="handle_escape">
+    <div class="col-xl-12">
+        <div class="card" style="background-color: #FFFFFF; color: #000000">
+            <header class="card-header font-small blue">
+                Data Ingestion >> Channel Map
+            </header>
+            <article class="card-body">
+                <div class="row">
+                    <div class="col-sm-8">
+                        <table class="table table-striped table-bordered table-hover">
+                            <thead>
+                            <tr>
+                                <th scope="col">Position</th>
+                                <th scope="col">Variable Name</th>
+                                <th scope="col">Data Type</th>
+                            </tr>
+                            </thead>
+                            <tbody id="config-table-body">
+                            {% for i in range(0, len) %}
+                            <tr onclick="update_selected(this, {{ i }})">
+                                <th scope="row">{{ i+1 }}</th>
+                                <td>{{ channels[i][0] }}</td>
+                                <td>{{ channels[i][1] }}</td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="btn-group-lg" role="group">
+                        <button class="btn btn-primary" type="button" id="import_channels" data-toggle="modal"
+                                data-target="#modal-import">Import
+                        </button>
+                        <button class="btn btn-primary" type="button" id="export_channels" data-toggle="modal"
+                                data-target="#modal-export">Export
+                        </button>
+                        <button class="btn btn-primary" type="button" id="add_channels" data-toggle="modal"
+                                data-target="#modal-add">Add
+                        </button>
+                        <button class="btn btn-primary" type="button" id="modify_channels" data-toggle="modal"
+                                data-target="#modal-modify">Modify
+                        </button>
+                        <button class="btn btn-primary btn" type="button" id="delete_channels" data-toggle="modal"
+                                data-target="#modal-delete" disabled> Delete
+                        </button>
+                    </div>
+                </div>
+            </article> <!-- card-body end .// -->
+
+        </div> <!-- card.// -->
+    </div> <!-- col.//-->
+</div> <!-- row.//-->
+
+<div class="row" style='margin: 0'>
+    <div class="col-lg">
+        <div class="modal fade" id="modal-add" tabindex="-1" role="dialog" aria-labelledby="modal-add"
+             aria-hidden="true">
+            <div class="modal-dialog modal- modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h6 class="modal-title" id="modal-title-add"><strong>Add Channel</strong></h6>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <form action='/add-channel' method="POST">
+                            <div class="form-group row">
+                                <label for="ch-num" class="col-sm-2 col-form-label" data-toggle="tooltip"
+                                       data-placement="bottom" title="The channel number to be inserted as."><b>Channel
+                                    Number</b></label>
+                                <div class="col-sm-2">
+                                    <input id="ch-num" name="ch-num" type="number" class="form-control-sm"
+                                           value=cur_selected>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="ch-name" class="col-sm-2 col-form-label" data-toggle="tooltip"
+                                       data-placement="bottom"
+                                       title="The channel name of the variable to be mapped."><b>Channel
+                                    Name</b></label>
+                                <div class="col-sm-2">
+                                    <input id="ch-name" name="ch-name" type="text" class="form-control-sm"
+                                           value=>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-8">
+                                    <button name="submit" type="submit" class="btn btn-primary">Submit <i
+                                            class="fa fa-spinner fa-spin" id="loading-icon1" style="display: none"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <span style="color: green" id="form-response1"></span>
+                        </form>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-link  ml-auto" data-dismiss="modal">Close</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" style='margin: 0'>
+    <div class="col-lg">
+        <div class="modal fade" id="modal-modify" tabindex="-1" role="dialog" aria-labelledby="modal-modify"
+             aria-hidden="true">
+            <div class="modal-dialog modal- modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h6 class="modal-title" id="modal-title-modify"><strong>Modify Channel</strong></h6>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <form action='/modify-channel' method="POST">
+                            <div class="form-group row">
+                                <label for="ch-num" class="col-sm-2 col-form-label" data-toggle="tooltip"
+                                       data-placement="bottom" title="The channel number to be inserted as."><b>Channel
+                                    Number</b></label>
+                                <div class="col-sm-2">
+                                    <input id="ch-num-modify" name="ch-num" type="number" class="form-control-sm">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="ch-name" class="col-sm-2 col-form-label" data-toggle="tooltip"
+                                       data-placement="bottom"
+                                       title="The channel name of the variable to be mapped."><b>Channel
+                                    Name</b></label>
+                                <div class="col-sm-2">
+                                    <input id="ch-name-modify" name="ch-name" type="text" class="form-control-sm"
+                                           value=>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-8">
+                                    <button name="submit" type="submit" class="btn btn-primary">Submit <i
+                                            class="fa fa-spinner fa-spin" id="loading-icon2" style="display: none"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <span style="color: green" id="form-response2"></span>
+                        </form>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-link  ml-auto" data-dismiss="modal">Close</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" style='margin: 0'>
+    <div class="col-lg">
+        <div class="modal fade" id="modal-delete" tabindex="-1" role="dialog" aria-labelledby="modal-delete"
+             aria-hidden="true">
+            <div class="modal-dialog modal- modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h6 class="modal-title" id="modal-title-delete"><strong>Delete</strong></h6>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <form action='/delete-channel' method="POST">
+                            <h5>Are you sure you would like to delete the following channel?</h5> <br>
+                            <strong>Channel Position: </strong>
+                            <p id="ch-num-delete"></p>
+                            <strong>Channel Name: </strong>
+                            <p id="ch-name-delete"></p>
+                            <div class="form-group row">
+                                <div class="col-8">
+                                    <button name="submit" type="submit" class="btn btn-primary">Delete Channel <i
+                                            class="fa fa-spinner fa-spin" id="loading-icon3" style="display: none"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <span style="color: green" id="form-response3"></span>
+                        </form>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-link  ml-auto" data-dismiss="modal">Close</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" style='margin: 0'>
+    <div class="col-lg">
+        <div class="modal fade" id="modal-import" tabindex="-1" role="dialog" aria-labelledby="modal-import"
+             aria-hidden="true">
+            <div class="modal-dialog modal- modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h6 class="modal-title" id="modal-title-import"><strong>Import Channel Mapping</strong></h6>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <form action='/upload-channel-config' method="POST" id="load-file">
+                            <div class="custom-file">
+                                <label id='channel-file-label' for="channel-file" class="custom-file-label">Choose CSV
+                                    File</label>
+                                <input id="channel-file" name="channel-file" type="file" class="custom-file-input"
+                                       form="load-file" oninput="change_file_text()">
+                            </div>
+                            <div class="form-group row" style="padding-top: 1%">
+                                <div class="col-8">
+                                    <button name="submit" type="submit" class="btn btn-primary">Load CSV<i
+                                            class="fa fa-spinner fa-spin" id="loading-icon4" style="display: none"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <span style="color: red" id="form-response4"></span>
+                        </form>
+
+
+                        <div class="row">
+                            <div class="col-sm-8">
+                                <table class="table table-striped table-bordered table-hover" id="import-table"
+                                       style="display: none">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col">Position</th>
+                                        <th scope="col">Variable Name</th>
+                                        <th scope="col">Data Type</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="import-table-body">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form action='/finalize-channel-config' method="POST" id="load-file-finalize">
+                        <div class="form-group row">
+                            <input id="mapping" name='mapping' type="hidden">
+                            <div class="col-8">
+                                <button name="submit" type="submit" class="btn btn-primary">Apply Mapping<i
+                                        class="fa fa-spinner fa-spin" id="loading-icon5" style="display: none"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <span style="color: red" id="form-response5"></span>
+                    </form>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-link  ml-auto" data-dismiss="modal">Close</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

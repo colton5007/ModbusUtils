@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Modbus Utility">
+    <meta name="author" content="Colton Sandvik">
+    <title>ModbusUtils</title>
+    <!-- Favicon -->
+    <link href="../assets/img/brand/favicon.png" rel="icon" type="image/png">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet">
+    <!-- Icons -->
+    <link href="../assets/vendor/nucleo/css/nucleo.css" rel="stylesheet">
+    <link href="../assets/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <!-- Argon CSS -->
+    <link type="text/css" href="../assets/css/argon.css?v=1.1.0" rel="stylesheet">
+</head>
+
+<body>
+<header class="app-header">
+    <nav class="navbar sticky-top mb-0 p-0 bg-gray-900">
+        <a class="navbar-brand" id="sidebarCollapse">
+            <img class="navbar-brand-full" src="../assets/img/brand/LevelOps-SS-Logo.png" width="120" height="40"
+                 alt="LevelOps Logo">
+        </a>
+        <div class="bg-gray-900">
+            <div class="callout callout-info d-inline-block m-0">
+                <small class="text-muted">Uptime</small>
+                <br>
+                <strong style='color: lightgray;' class="h4" id="uptime"></strong>
+            </div>
+            <div class="d-md-inline-block m-0 px-2">
+                <i class="fa fa-power-off fa-inverse fa-2x" style="display: inline-block"></i>
+            </div>
+            <div class="d-md-inline-block m-0 px-2">
+                <i class="fa fa-refresh fa-inverse fa-2x" style="display: inline-block"></i>
+            </div>
+        </div>
+    </nav>
+</header>
+<div class="wrapper">
+    <!-- Sidebar  -->
+    <nav class='sidebar-nav bg-gray-800' id="sidebar">
+
+        <ul class="list-unstyled components p-0 border-bottom-0">
+            <li class="active">
+                <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Monitor</a>
+                <ul class="collapse list-unstyled" id="homeSubmenu">
+                    <li>
+                        <a href="javascript:show('slave-live');">Slaves</a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Configuration</a>
+                <ul class="collapse list-unstyled" id="pageSubmenu">
+                    <li>
+                        <a href="#inSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Modbus
+                            Client</a>
+                        <ul class="collapse list-unstyled" id="inSubmenu">
+                            <li>
+                                <a href="javascript:show('client-modbus-config');" class="sub-menu">Modbus</a>
+                            </li>
+                            <li>
+                                <a href="javascript:show('client-tcp-config');" class="sub-menu">TCP</a>
+                            </li>
+                            <!--<li>
+                                <a href="javascript:show('ingest-stream-config');">Data Stream</a>
+                            </li>-->
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#outSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Modbus
+                            Server</a>
+                        <ul class="collapse list-unstyled" id="outSubmenu">
+                            <li>
+                                <a href="javascript:show('server-config');" class="sub-menu">TCP</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+
+        <ul class="list-unstyled CTAs">
+            <li>
+                <a class="article" data-toggle="modal" data-target="#modal-about">About</a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Page Content  -->
+    <div id="content">
+        <div class="row">
+            <div class="col-lg-5">
+                <div class="card" style="background-color: #fff6ac; color: #000000">
+                    <article class="card-body">
+                        <form action='/client-tcp-config' method="POST" id="config_form">
+                            <div class="form-group row">
+                                <label for="ip" class="col-sm-2 col-form-label" data-toggle="tooltip"
+                                       data-placement="bottom"
+                                       title=""><b>IP</b></label>
+                                <div class="col-sm-4">
+                                    <input id="ip" name="ip" type="text" class="form-control-sm" value="{{ ip }}">
+                                </div>
+
+                                <label for="port" class="col-sm-2 col-form-label" data-toggle="tooltip"
+                                       data-placement="bottom"
+                                       title=""><b>Port</b></label>
+                                <div class="col-sm-2">
+                                    <input id="port" name="port" type="number" class="form-control-sm" value={{ port }}>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-8">
+                                    <button name="submit" type="submit" class="btn btn-success">Connect <i
+                                            class="fa fa-spinner fa-spin" id="loading-icon" style="display: none"></i>
+                                    </button>
+                                </div>
+                                <span style="color: green" id="form-response"></span>
+                            </div>
+                        </form>
+                    </article>
+                </div>
+                <div class="card" style="background-color: #fff6ac; color: #000000">
+                    <article class="card-body">
+                <form action='/client-modbus-config' method="POST" id="modbus_form">
+                    <div class="form-group row">
+                        <label for="register_size" class="col-sm-3 col-form-label" data-toggle="tooltip"
+                               data-placement="bottom"
+                               title="The size of the registers being read"><b>Register Size</b></label>
+                        <div class="col-sm-2">
+                            <select class="form-control form-control-sm" id="register_size" name="register_size"
+                                    value={{register_size}}>
+                                <option value="16">16 bit</option>
+                                <option value="1">1 bit</option>
+                                <option value="32">32 bit</option>
+                            </select>
+                        </div>
+                        <label for="function_code" class="col-sm-3 col-form-label" data-toggle="tooltip"
+                               data-placement="bottom" title="The function code to be used."><b>Function Code</b></label>
+                        <div class="col-sm-2">
+                            <input id="function_code" name="function_code" type="number" min="0" max="16" class="form-control-sm" value={{
+                                   function_code }}>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="id_size" class="col-sm-3 col-form-label" data-toggle="tooltip"
+                               data-placement="bottom" title="id_size"><b>2 byte ID</b></label>
+                        <div class="col-sm-2">
+                            <label class="switch switch-label switch-primary"/>
+                            <input id="id_size" name="id_size" class="switch-input"
+                                   type="checkbox" checked={{ id_size }}>
+                            <span class="switch-slider" data-checked="On" data-unchecked="Off"></span>
+                        </div>
+				    <label for="offset" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="bottom" title="Offset to be subtracted from register address."><b>Minus Offset</b></label>
+				    <div class="col-sm-2">
+				      <input id="offset" name="offset" type="number" class="form-control-sm" value={{ offset }}>
+				    </div>
+				  </div>
+                    <div class="form-group row">
+				    <label for="slave_id" class="col-sm-3 col-form-label" data-toggle="tooltip"
+                               data-placement="bottom" title="The function code to be used."><b>Slave ID</b></label>
+                        <div class="col-sm-2">
+                            <input id="slave_id" name="slave_id" type="number" min="0" max="15" class="form-control-sm" value=1>
+                        </div>
+                        <label for="addr1" class="col-sm-3 col-form-label" data-toggle="tooltip"
+                               data-placement="bottom" title="The function code to be used."><b>Address Range</b></label>
+                        <div class="col-sm-2">
+                            <input id="addr1" name="addr1" type="number" min="1" max="50000" class="form-control-sm" value=1>
+                        </div>
+                        <div class="col-sm-2">
+                            <input id="addr2" name="addr2" type="number" min="1" max="50000" class="form-control-sm" value=20>
+                        </div>
+				  </div>
+                    <div class="form-group row">
+				    <label for="write_values" class="col-sm-3 col-form-label" data-toggle="tooltip"
+                               data-placement="bottom" title="Values to write to registers/coils."><b>Values to Write</b></label>
+                        <div class="col-sm-2">
+                            <input id="write_values" name="write_values" type="text" class="form-control-md">
+                        </div>
+				  </div>
+                    <div class="form-group row">
+                        <div class="col-8">
+                            <button name="submit" type="submit" class="btn btn-primary">Send  <i
+                                    class="fa fa-spinner fa-spin" id="loading-icon" style="display: none"></i></button>
+                            <span style="color: green" id="form-response2"></span>
+                        </div>
+                    </div>
+                </form>
+            </article>
+                </div>
+                <div class="card" style="background-color: #fff6ac; color: #000000">
+                    <article class="card-body">
+                        <h3>Slaves</h3>
+                        <table class="table table-bordered table-striped table-responsive-sm" style="background-color: #e4e5e6;">
+                            <thead>
+                            <tr>
+                                <th scope="col" class="w-auto">Port</th>
+                                <th scope="col" class="w-auto">Status</th>
+                            </tr>
+                            </thead>
+
+                        <tbody>
+                        {%for s in slaves %}
+                            <tr><td scope="row">{{ s['port'] }}</td><td>Running</td></tr>
+                        {%endfor%}
+                        </tbody>
+                        </table>
+                    </article>
+                </div>
+            </div>
+            <div class="col-lg-7"><!--Table-->
+                <table id="tablePreview" class="table table-bordered table-striped table-responsive-sm">
+                    <!--Table head-->
+                    <thead>
+                    <tr>
+                        <th scope="col" class="w-auto">Data Type</th>
+                        <th scope="col" class="w-auto">Register #</th>
+                        <th scope="col">Bytes</th>
+                        <th scope="col">Parsed</th>
+                    </tr>
+                    </thead>
+                    <!--Table head-->
+                    <!--Table body-->
+                    <tbody id="tbo">
+
+                    </tbody>
+                    <!--Table body-->
+                </table>
+                <!--Table--></div>
+        </div>
+    </div>
+
+</div>  <!-- Core -->
+<div class="row" style='margin: 0'>
+    <div class="col-lg">
+        <div class="modal fade" id="modal-about" tabindex="-1" role="dialog" aria-labelledby="modal-about"
+             aria-hidden="true">
+            <div class="modal-dialog modal- modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h6 class="modal-title" id="modal-title-add"><strong>About</strong></h6>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        Author: Colton Sandvik <br>
+                        Contact: sandvikcolton@gmail.com <br>
+                        Version: 0.1 Alpha
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-link  ml-auto" data-dismiss="modal">Close</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/jquery/jquery.min.js"></script>
+<script src="../assets/vendor/popper/popper.min.js"></script>
+<script src="../assets/vendor/bootstrap/bootstrap.min.js"></script>
+<script src="../assets/vendor/headroom/headroom.min.js"></script>
+<!-- Optional JS -->
+<script src="../assets/vendor/onscreen/onscreen.min.js"></script>
+<script src="../assets/vendor/nouislider/js/nouislider.min.js"></script>
+<script src="../assets/vendor/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
+<!-- Argon JS -->
+<script src="../assets/js/argon.js?v=1.1.0"></script>
+<script src="../assets/js/socket.io.js"></script>
+<script src="http://malsup.github.com/jquery.form.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#sidebarCollapse').on('click', function () {
+            $('#sidebar').toggleClass('active');
+        });
+        setup_ajax_forms()
+        var socket = io.connect();
+        socket.on('viewer', function (data) {
+            // document.getElementById('test').innerText = data;
+            // console.log("Rx viewer data");
+            let ts = data.ts;
+            let payload = data.payload;
+            add_row_to_stream(ts, payload)
+        });
+        socket.emit('test', {data: 'test payload'})
+
+    });
+    $(document).ready(function() {
+     $('#modbus_form').ajaxForm({
+            url: 'client-modbus-config',
+            dataType: 'json',
+            success: createTable
+     });
+     $('#modbus_form').submit(function() {
+        // submit the form
+        $(this).ajaxSubmit();
+        // return false to prevent normal browser submit and page navigation
+        return false;
+    });
+    });
+
+    function sendClientData() {
+
+    }
+
+    function createTable(resp) {
+        if (resp === "Success"){
+            document.getElementById('form-response2').innerText = "Data written to Modbus TCP Slave";
+            return;
+        } else if (resp === "Failure") {
+            document.getElementById('form-response2').innerText = "Data failed to be written to Modbus TCP Slave";
+            return;
+        }
+        let regs = resp['data']
+        let base = "";
+        for (let i = 0; i < regs.length; i++) {
+            let temp = `<tr id="crow-${i}">
+                        <td scope="row">
+                            <div class="btn-group col-md-8">
+                                <button id="crow-${i}-btn" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown"
+                                        aria-haspopup="true" aria-expanded="false">Bits
+                                </button>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="#" onclick="setParser(${i},0)">Bits</a>
+                                    <a class="dropdown-item" href="#" onclick="setParser(${i},1)">Int16</a>
+                                    <a class="dropdown-item" href="#" onclick="setParser(${i},2)">Float32</a>
+                                </div>
+                            </div>
+                        </td>
+                        <td>${i}</td>
+                        <td id="crow-${i}-src">${regs[i]}</td>
+                        <td id="crow-${i}-parse">${regs[i]}</td>
+                    </tr>`;
+            base = base + temp;
+        }
+        document.getElementById('tbo').innerHTML = base;
+    }
+
+    function show(path) {
+        xhttp = new XMLHttpRequest();
+        e = document.getElementById('content');
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4) {
+                if (this.status == 200) {
+                    e.innerHTML = this.responseText;
+                    setup_ajax_forms()
+                }
+                if (this.status == 404) {
+                    e.innerHTML = "Page not found.";
+                }
+            }
+        };
+        xhttp.open("GET", '/' + path, true);
+        xhttp.send();
+        /* Exit the function: */
+
+    }
+
+    function update_stats() {
+        xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4) {
+                if (this.status == 200) {
+                    let resp = $.parseJSON(this.responseText);
+                    document.getElementById('uptime').innerText = resp.uptime;
+                    try {
+                        let stIn = resp.ingestStatus.tcp_csv_south.status_in;
+                        let stRead = resp.ingestStatus.tcp_csv_south.status_readings;
+                        if (stIn === 'Valid') {
+                            document.getElementById('status-in-i').classList.remove('bg-danger');
+                            document.getElementById('status-in-i').classList.add('bg-success');
+                        } else {
+                            document.getElementById('status-in-i').classList.remove('bg-success');
+                            document.getElementById('status-in-i').classList.add('bg-danger');
+                        }
+                        if (stRead === 'Valid') {
+                            document.getElementById('status-readings-i').classList.remove('bg-danger');
+                            document.getElementById('status-readings-i').classList.add('bg-success');
+                        } else {
+                            document.getElementById('status-readings-i').classList.remove('bg-success');
+                            document.getElementById('status-readings-i').classList.add('bg-danger');
+                        }
+                        document.getElementById('status-in').innerText = stIn;
+                        document.getElementById('status-readings').innerText = stRead;
+                        if (resp.egressStatus) {
+                            document.getElementById('status-out').innerText = 'Valid';
+                            document.getElementById('status-out-i').classList.remove('bg-danger');
+                            document.getElementById('status-out-i').classList.add('bg-success');
+                        } else {
+                            document.getElementById('status-out').innerText = 'Faulted';
+                            document.getElementById('status-out-i').classList.remove('bg-success');
+                            document.getElementById('status-out-i').classList.add('bg-danger');
+                        }
+                    } catch {
+
+                    }
+                }
+            }
+        };
+        xhttp.open("GET", '/stats', true);
+        xhttp.send();
+        /* Exit the function: */
+
+    }
+
+    update_stats();
+    setInterval(update_stats, 30000);
+
+    function show_auth() {
+        let e = document.getElementById('auth_enabled').checked;
+        if (e) {
+            document.getElementById('auth').style.display = 'block';
+        } else {
+            document.getElementById('auth').style.display = 'none';
+        }
+
+    }
+
+    function add_row_to_stream(ts, data) {
+        try {
+            let e = document.getElementById('stream-table');
+            let row = document.createElement("tr");
+            row.style.display = 'table';
+            row.style.width = '100%';
+            row.style.tableLayout = 'fixed';
+            row.innerHTML = '<th scope="row" style="width: 15%">' + ts + '</th>\n' +
+                '                        <td>' + data + '</td>';
+            e.insertBefore(row, e.childNodes[0])
+        } catch {
+
+        }
+    }
+
+    try {
+        document.getElementById('stream-table').style.height = window.innerHeight * 0.8 + 'px'
+    } catch (error) {
+
+    }
+
+    function setup_ajax_forms() {
+
+        $("#config_form").submit(function (e) {
+
+            e.preventDefault(); // avoid to execute the actual submit of the form.
+            document.getElementById('loading-icon').style.display = 'inline-block';
+            let form = $(this);
+            let url = form.attr('action');
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: form.serialize(), // serializes the form's elements.
+                success: function (data) {
+                    e1 = document.getElementById('form-response');
+                    document.getElementById('loading-icon').style.display = 'none';
+                    if (data === "Fail") {
+                        e1.style.color = 'red';
+                        e1.innerText = "Configuration could not be applied!";
+                    } else {
+                        e1.innerText = data;
+                    }
+                }
+            });
+        });
+        $("#load-file").submit(function (e) {
+
+            e.preventDefault(); // avoid to execute the actual submit of the form.
+            document.getElementById('loading-icon4').style.display = 'inline-block';
+            let form = $(this);
+            let url = form.attr('action');
+            let xhttp = new XMLHttpRequest();
+            let formData = new FormData();
+            formData.append('channel-file', document.getElementById('channel-file').files[0]);
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4) {
+                    if (this.status == 200) {
+                        load_import(this.responseText);
+                        document.getElementById('mapping').value = this.responseText;
+                        document.getElementById('loading-icon4').style.display = 'none';
+                    }
+                }
+            };
+            xhttp.open('POST', url);
+            xhttp.send(formData);
+        });
+
+        $("#load-file-finalize").submit(function (e) {
+
+            e.preventDefault(); // avoid to execute the actual submit of the form.
+            document.getElementById('loading-icon5').style.display = 'inline-block';
+            let form = $(this);
+            let url = form.attr('action');
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: form.serialize(), // serializes the form's elements.
+                success: function (data) {
+                    let e1 = document.getElementById('form-response5');
+                    document.getElementById('loading-icon5').style.display = 'none';
+                    if (data === "Fail") {
+                        e1.style.color = 'red';
+                        e1.innerText = "Configuration could not be applied!";
+                    } else {
+                        let new_table = document.getElementById('import-table-body').innerHTML;
+                        document.getElementById('config-table-body').innerHTML = new_table;
+                        $('#modal-import').modal('hide');
+                    }
+                }
+            });
+        });
+
+        $('#modal-modify').on('shown.bs.modal', function () {
+            $('#ch-num-modify').val(cur_selected + 1);
+            row = document.getElementById('config-table-body').children[cur_selected].children;
+            $('#ch-name-modify').val(row[1].innerHTML)
+        });
+        $('#modal-delete').on('shown.bs.modal', function () {
+            $('#ch-num-delete').text(cur_selected + 1);
+            row = document.getElementById('config-table-body').children[cur_selected].children;
+            $('#ch-name-delete').text(row[1].innerHTML)
+        })
+    }
+
+    let cur_selected = -1;
+
+    function update_selected(elmnt, new_selected) {
+        if (elmnt.parentNode.id !== 'config-table-body') {
+            return
+        }
+
+        let nodes = document.getElementById('config-table-body').children;
+        if (cur_selected !== -1) {
+            nodes[cur_selected].classList.remove('tr-selected')
+        }
+        if (new_selected !== -1) {
+            nodes[new_selected].classList.add('tr-selected');
+            $('#delete_channels').prop('disabled', false);
+        } else {
+            $('#delete_channels').prop('disabled', true);
+        }
+        cur_selected = new_selected
+    }
+
+    function handle_escape(event) {
+        if (event.keyCode === 27) {
+            update_selected(-1)
+        }
+    }
+
+    let channels;
+
+    function load_import(data) {
+        try {
+            channels = $.parseJSON(data);
+            e = document.getElementById('import-table-body');
+            e.innerHTML = '';
+            $('#import-table').css('display', 'table');
+            for (let i = 0; i < channels.length; i++) {
+                tr = document.createElement('tr');
+                tr.setAttribute('onclick', "update_selected(this," + i + ")");
+                tr.innerHTML = "<th scope=\"row\">" + (i + 1) + "</th>\n" +
+                    "                                    <td>" + channels[i][0] + "</td>\n" +
+                    "                                    <td>" + channels[i][1] + "</td>";
+                e.appendChild(tr)
+            }
+        } catch {
+            $('#form-response4').text('Could not parse channel configuration.')
+        }
+
+    }
+
+    function change_file_text() {
+        try {
+            let e = document.getElementById('channel-file');
+            let eLabel = document.getElementById('channel-file-label');
+            eLabel.innerText = e.files[0].name;
+        } catch {
+            document.getElementById('channel-file-label').innerText = 'Choose CSV File';
+        }
+    }
+
+    function setParser(row, dt) {
+        let btn_text = 'Bits';
+        let source_val = document.getElementById('crow-'+row+'-src').innerText;
+        let parse_val = source_val;
+        if (dt === 1) {
+            btn_text = 'Int16'
+            parse_val = parseInt(source_val, 2);
+        } else if (dt === 2) {
+            btn_text = 'Float32';
+            let source_val = document.getElementById('crow-'+row+'-src').innerText + document.getElementById('crow-'+(row+1)+'-src').innerText;
+            var buffer = new ArrayBuffer(2);
+            var bytes = new Uint8Array(buffer);
+
+            for (let i = 0; i < 4; i++) {
+                bytes[i] = parseInt(source_val.slice(8*i, 8*(i+1)), 2)
+            }
+            var view = new DataView(buffer);
+            try {
+                parse_val = view.getFloat32(0, false);
+            } catch (e) {
+                parse_val = 'NaN'
+            }
+        }
+        document.getElementById('crow-'+row+'-btn').innerText = btn_text;
+        document.getElementById('crow-'+row+'-parse').innerText = parse_val;
+
+    }
+</script>
+</body>
+
+</html>
